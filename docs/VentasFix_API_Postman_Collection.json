@@ -1,0 +1,356 @@
+{
+	"info": {
+		"_postman_id": "ventasfix-api-examen-2026",
+		"name": "VentasFix API - Examen Web 1",
+		"description": "Colección completa de endpoints para la evaluación sumativa de VentasFix con integración Softland y autenticación Bearer Token (Sanctum).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "0. Autenticación",
+			"item": [
+				{
+					"name": "Login API (Obtener Token)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@ventasfix.cl\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "http://ventasfix.test/api/v1/auth/login",
+							"protocol": "http",
+							"host": ["ventasfix", "test"],
+							"path": ["api", "v1", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Petición sin Token (Demuestra 401 Unauthorized)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Accept", "value": "application/json"}
+						],
+						"url": {
+							"raw": "http://ventasfix.test/api/v1/productos",
+							"protocol": "http",
+							"host": ["ventasfix", "test"],
+							"path": ["api", "v1", "productos"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "1. Usuarios API",
+			"item": [
+				{
+					"name": "1.1 Listar Todos los Usuarios (200 OK)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"url": {
+							"raw": "http://ventasfix.test/api/v1/usuarios",
+							"protocol": "http",
+							"host": ["ventasfix", "test"],
+							"path": ["api", "v1", "usuarios"]
+						}
+					}
+				},
+				{
+					"name": "1.2 Obtener Usuario por ID (200 OK)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"url": {
+							"raw": "http://ventasfix.test/api/v1/usuarios/1",
+							"protocol": "http",
+							"host": ["ventasfix", "test"],
+							"path": ["api", "v1", "usuarios", "1"]
+						}
+					}
+				},
+				{
+					"name": "1.3 Agregar Nuevo Usuario (201 Created)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"rut\": \"16.555.444-3\",\n    \"nombre\": \"Esteban\",\n    \"apellido\": \"Salas\",\n    \"email\": \"esalas@ventasfix.cl\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "http://ventasfix.test/api/v1/usuarios",
+							"protocol": "http",
+							"host": ["ventasfix", "test"],
+							"path": ["api", "v1", "usuarios"]
+						}
+					}
+				},
+				{
+					"name": "1.4 Actualizar Usuario por ID (200 OK)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"rut\": \"16.555.444-3\",\n    \"nombre\": \"Esteban Actualizado\",\n    \"apellido\": \"Salas Perez\",\n    \"email\": \"esalas@ventasfix.cl\"\n}"
+						},
+						"url": {
+							"raw": "http://ventasfix.test/api/v1/usuarios/1",
+							"protocol": "http",
+							"host": ["ventasfix", "test"],
+							"path": ["api", "v1", "usuarios", "1"]
+						}
+					}
+				},
+				{
+					"name": "1.5 Eliminar Usuario por ID (200 OK)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"url": {
+							"raw": "http://ventasfix.test/api/v1/usuarios/3",
+							"protocol": "http",
+							"host": ["ventasfix", "test"],
+							"path": ["api", "v1", "usuarios", "3"]
+						}
+					}
+				},
+				{
+					"name": "Validación Rechazo Dominio @ventasfix.cl (422)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"rut\": \"17.111.222-3\",\n    \"nombre\": \"Pedro\",\n    \"apellido\": \"Gomez\",\n    \"email\": \"pedro@externo.cl\",\n    \"password\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "http://ventasfix.test/api/v1/usuarios",
+							"protocol": "http",
+							"host": ["ventasfix", "test"],
+							"path": ["api", "v1", "usuarios"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Productos API",
+			"item": [
+				{
+					"name": "2.1 Listar Todos los Productos (200 OK)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"url": {
+							"raw": "http://ventasfix.test/api/v1/productos",
+							"protocol": "http",
+							"host": ["ventasfix", "test"],
+							"path": ["api", "v1", "productos"]
+						}
+					}
+				},
+				{
+					"name": "2.2 Obtener Producto por ID (200 OK)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"url": {
+							"raw": "http://ventasfix.test/api/v1/productos/1",
+							"protocol": "http",
+							"host": ["ventasfix", "test"],
+							"path": ["api", "v1", "productos", "1"]
+						}
+					}
+				},
+				{
+					"name": "2.3 Agregar Nuevo Producto (201 Created + IVA 19%)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sku\": \"PRD-PM-01\",\n    \"nombre\": \"Webcam 4K Ultra HD Pro\",\n    \"descripcion_corta\": \"Cámara web con micrófono dual y autofoco\",\n    \"descripcion_larga\": \"Sensor CMOS con lente gran angular de 90 grados y corrección automática de iluminación.\",\n    \"imagen\": \"/images/products/03.png\",\n    \"precio_neto\": 45000,\n    \"stock_actual\": 30,\n    \"stock_minimo\": 5,\n    \"stock_bajo\": 10,\n    \"stock_alto\": 60\n}"
+						},
+						"url": {
+							"raw": "http://ventasfix.test/api/v1/productos",
+							"protocol": "http",
+							"host": ["ventasfix", "test"],
+							"path": ["api", "v1", "productos"]
+						}
+					}
+				},
+				{
+					"name": "2.4 Actualizar Producto por ID (200 OK)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sku\": \"PRD-001\",\n    \"nombre\": \"Laptop Profesional ProBook 15 Actualizada\",\n    \"descripcion_corta\": \"Laptop Core i7 32GB RAM\",\n    \"descripcion_larga\": \"Actualizado a 32GB de RAM para entornos de desarrollo exigentes.\",\n    \"imagen\": \"/images/products/01.png\",\n    \"precio_neto\": 700000,\n    \"stock_actual\": 22,\n    \"stock_minimo\": 5,\n    \"stock_bajo\": 10,\n    \"stock_alto\": 50\n}"
+						},
+						"url": {
+							"raw": "http://ventasfix.test/api/v1/productos/1",
+							"protocol": "http",
+							"host": ["ventasfix", "test"],
+							"path": ["api", "v1", "productos", "1"]
+						}
+					}
+				},
+				{
+					"name": "2.5 Eliminar Producto por ID (200 OK)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"url": {
+							"raw": "http://ventasfix.test/api/v1/productos/4",
+							"protocol": "http",
+							"host": ["ventasfix", "test"],
+							"path": ["api", "v1", "productos", "4"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Clientes API",
+			"item": [
+				{
+					"name": "3.1 Listar Todos los Clientes (200 OK)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"url": {
+							"raw": "http://ventasfix.test/api/v1/clientes",
+							"protocol": "http",
+							"host": ["ventasfix", "test"],
+							"path": ["api", "v1", "clientes"]
+						}
+					}
+				},
+				{
+					"name": "3.2 Obtener Cliente por ID (200 OK)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"url": {
+							"raw": "http://ventasfix.test/api/v1/clientes/1",
+							"protocol": "http",
+							"host": ["ventasfix", "test"],
+							"path": ["api", "v1", "clientes", "1"]
+						}
+					}
+				},
+				{
+					"name": "3.3 Agregar Nuevo Cliente (201 Created)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"rut_empresa\": \"79.333.222-1\",\n    \"rubro\": \"Desarrollo de Software\",\n    \"razon_social\": \"Sistemas Digitales Avanzados SpA\",\n    \"telefono\": \"+56 9 7654 3210\",\n    \"direccion\": \"Moneda 970, Santiago\",\n    \"nombre_contacto\": \"Andrea Soto\",\n    \"email_contacto\": \"asoto@sistemasdigitales.cl\"\n}"
+						},
+						"url": {
+							"raw": "http://ventasfix.test/api/v1/clientes",
+							"protocol": "http",
+							"host": ["ventasfix", "test"],
+							"path": ["api", "v1", "clientes"]
+						}
+					}
+				},
+				{
+					"name": "3.4 Actualizar Cliente por ID (200 OK)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"rut_empresa\": \"76.123.456-7\",\n    \"rubro\": \"Telecomunicaciones y Redes\",\n    \"razon_social\": \"Inversiones Tecnológicas SpA\",\n    \"telefono\": \"+56 9 8765 4321\",\n    \"direccion\": \"Av. Providencia 1234, Of. 601, Santiago\",\n    \"nombre_contacto\": \"Mariana Valenzuela\",\n    \"email_contacto\": \"mvalenzuela@invertech.cl\"\n}"
+						},
+						"url": {
+							"raw": "http://ventasfix.test/api/v1/clientes/1",
+							"protocol": "http",
+							"host": ["ventasfix", "test"],
+							"path": ["api", "v1", "clientes", "1"]
+						}
+					}
+				},
+				{
+					"name": "3.5 Eliminar Cliente por ID (200 OK)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"url": {
+							"raw": "http://ventasfix.test/api/v1/clientes/3",
+							"protocol": "http",
+							"host": ["ventasfix", "test"],
+							"path": ["api", "v1", "clientes", "3"]
+						}
+					}
+				}
+			]
+		}
+	]
+}
