@@ -15,12 +15,20 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix('v1')->group(function () {
-    // Autenticación de API
+    // Autenticación de API (soporta /login y /auth/login)
+    Route::post('/login', [AuthController::class, 'login']);
     Route::post('/auth/login', [AuthController::class, 'login']);
 
     // Rutas protegidas por Sanctum
     Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/logout', [AuthController::class, 'logout']);
         Route::post('/auth/logout', [AuthController::class, 'logout']);
+        Route::get('/me', function (\Illuminate\Http\Request $request) {
+            return response()->json([
+                'codigo' => 200,
+                'usuario' => new \App\Http\Resources\UsuarioResource($request->user()),
+            ]);
+        });
 
         // 1. Usuarios API
         Route::apiResource('usuarios', UsuarioApiController::class);

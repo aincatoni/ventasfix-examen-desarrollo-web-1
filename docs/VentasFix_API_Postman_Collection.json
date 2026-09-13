@@ -1,16 +1,43 @@
 {
 	"info": {
-		"_postman_id": "ventasfix-api-examen-2026",
-		"name": "VentasFix API - Examen Web 1",
-		"description": "Colección completa de endpoints para la evaluación sumativa de VentasFix con integración Softland y autenticación Bearer Token (Sanctum).",
+		"_postman_id": "ventasfix-api-examen-2026-v2",
+		"name": "VentasFix API - Examen Desarrollo Web 1",
+		"description": "Colección completa para pruebas en vivo de la API RESTful de VentasFix con autenticación por Bearer Tokens (Laravel Sanctum), cálculo de 19% IVA, validación de dominio @ventasfix.cl y manejo estricto de códigos HTTP (200, 201, 401, 404, 422).",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://ventasfix.test/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	],
 	"item": [
 		{
-			"name": "0. Autenticación",
+			"name": "0. Autenticación & Seguridad",
 			"item": [
 				{
-					"name": "Login API (Obtener Token)",
+					"name": "0.1 Login Exitoso (200 OK - Genera y Guarda Token)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.token) {",
+									"    pm.collectionVariables.set(\"token\", jsonData.token);",
+									"    console.log(\"✓ Token Sanctum guardado automáticamente:\", jsonData.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [
@@ -22,25 +49,75 @@
 							"raw": "{\n    \"email\": \"admin@ventasfix.cl\",\n    \"password\": \"password123\"\n}"
 						},
 						"url": {
-							"raw": "http://ventasfix.test/api/v1/auth/login",
-							"protocol": "http",
-							"host": ["ventasfix", "test"],
-							"path": ["api", "v1", "auth", "login"]
-						}
+							"raw": "{{base_url}}/login",
+							"host": ["{{base_url}}"],
+							"path": ["login"]
+						},
+						"description": "Autentica al usuario con Bcrypt y genera el Bearer Token de Sanctum. Guarda el token automáticamente en la variable {{token}} de la colección."
 					}
 				},
 				{
-					"name": "Petición sin Token (Demuestra 401 Unauthorized)",
+					"name": "0.2 Petición sin Token (Demuestra 401 Unauthorized)",
 					"request": {
 						"method": "GET",
 						"header": [
 							{"key": "Accept", "value": "application/json"}
 						],
 						"url": {
-							"raw": "http://ventasfix.test/api/v1/productos",
-							"protocol": "http",
-							"host": ["ventasfix", "test"],
-							"path": ["api", "v1", "productos"]
+							"raw": "{{base_url}}/productos",
+							"host": ["{{base_url}}"],
+							"path": ["productos"]
+						},
+						"description": "Demuestra la protección de rutas. Al no enviar el Bearer Token, Laravel Sanctum responde con 401 Unauthorized."
+					}
+				},
+				{
+					"name": "0.3 Login con Credenciales Erróneas (Demuestra 401 Unauthorized)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@ventasfix.cl\",\n    \"password\": \"clave_incorrecta_999\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/login",
+							"host": ["{{base_url}}"],
+							"path": ["login"]
+						},
+						"description": "Prueba de autenticación fallida por contraseña errónea."
+					}
+				},
+				{
+					"name": "0.4 Usuario Autenticado /me (200 OK)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/me",
+							"host": ["{{base_url}}"],
+							"path": ["me"]
+						}
+					}
+				},
+				{
+					"name": "0.5 Logout API (200 OK - Revoca Token)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/logout",
+							"host": ["{{base_url}}"],
+							"path": ["logout"]
 						}
 					}
 				}
@@ -58,10 +135,9 @@
 							{"key": "Authorization", "value": "Bearer {{token}}"}
 						],
 						"url": {
-							"raw": "http://ventasfix.test/api/v1/usuarios",
-							"protocol": "http",
-							"host": ["ventasfix", "test"],
-							"path": ["api", "v1", "usuarios"]
+							"raw": "{{base_url}}/usuarios",
+							"host": ["{{base_url}}"],
+							"path": ["usuarios"]
 						}
 					}
 				},
@@ -74,15 +150,14 @@
 							{"key": "Authorization", "value": "Bearer {{token}}"}
 						],
 						"url": {
-							"raw": "http://ventasfix.test/api/v1/usuarios/1",
-							"protocol": "http",
-							"host": ["ventasfix", "test"],
-							"path": ["api", "v1", "usuarios", "1"]
+							"raw": "{{base_url}}/usuarios/1",
+							"host": ["{{base_url}}"],
+							"path": ["usuarios", "1"]
 						}
 					}
 				},
 				{
-					"name": "1.3 Agregar Nuevo Usuario (201 Created)",
+					"name": "1.3 Crear Usuario con Dominio Válido (201 Created)",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -92,18 +167,39 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"rut\": \"16.555.444-3\",\n    \"nombre\": \"Esteban\",\n    \"apellido\": \"Salas\",\n    \"email\": \"esalas@ventasfix.cl\",\n    \"password\": \"password123\"\n}"
+							"raw": "{\n    \"rut\": \"16.789.123-4\",\n    \"nombre\": \"Mauricio\",\n    \"apellido\": \"Contreras\",\n    \"email\": \"mcontreras@ventasfix.cl\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\",\n    \"rol\": \"vendedor\"\n}"
 						},
 						"url": {
-							"raw": "http://ventasfix.test/api/v1/usuarios",
-							"protocol": "http",
-							"host": ["ventasfix", "test"],
-							"path": ["api", "v1", "usuarios"]
-						}
+							"raw": "{{base_url}}/usuarios",
+							"host": ["{{base_url}}"],
+							"path": ["usuarios"]
+						},
+						"description": "Crea un usuario corporativo. La contraseña se hashea con Bcrypt."
 					}
 				},
 				{
-					"name": "1.4 Actualizar Usuario por ID (200 OK)",
+					"name": "1.4 Rechazo de Dominio Fuera de @ventasfix.cl (Demuestra 422 Unprocessable)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"rut\": \"18.999.888-7\",\n    \"nombre\": \"Usuario\",\n    \"apellido\": \"Invalido\",\n    \"email\": \"usuario.externo@gmail.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\",\n    \"rol\": \"vendedor\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/usuarios",
+							"host": ["{{base_url}}"],
+							"path": ["usuarios"]
+						},
+						"description": "Demuestra la validación de dominio exigida. Al ingresar un correo fuera de @ventasfix.cl, responde 422 Unprocessable Entity."
+					}
+				},
+				{
+					"name": "1.5 Actualizar Usuario por ID (200 OK)",
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -113,18 +209,17 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"rut\": \"16.555.444-3\",\n    \"nombre\": \"Esteban Actualizado\",\n    \"apellido\": \"Salas Perez\",\n    \"email\": \"esalas@ventasfix.cl\"\n}"
+							"raw": "{\n    \"nombre\": \"Mauricio Actualizado\",\n    \"apellido\": \"Contreras Silva\",\n    \"email\": \"mcontreras@ventasfix.cl\",\n    \"rol\": \"supervisor\"\n}"
 						},
 						"url": {
-							"raw": "http://ventasfix.test/api/v1/usuarios/1",
-							"protocol": "http",
-							"host": ["ventasfix", "test"],
-							"path": ["api", "v1", "usuarios", "1"]
+							"raw": "{{base_url}}/usuarios/1",
+							"host": ["{{base_url}}"],
+							"path": ["usuarios", "1"]
 						}
 					}
 				},
 				{
-					"name": "1.5 Eliminar Usuario por ID (200 OK)",
+					"name": "1.6 Eliminar Usuario por ID (200 OK)",
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -132,31 +227,9 @@
 							{"key": "Authorization", "value": "Bearer {{token}}"}
 						],
 						"url": {
-							"raw": "http://ventasfix.test/api/v1/usuarios/3",
-							"protocol": "http",
-							"host": ["ventasfix", "test"],
-							"path": ["api", "v1", "usuarios", "3"]
-						}
-					}
-				},
-				{
-					"name": "Validación Rechazo Dominio @ventasfix.cl (422)",
-					"request": {
-						"method": "POST",
-						"header": [
-							{"key": "Accept", "value": "application/json"},
-							{"key": "Content-Type", "value": "application/json"},
-							{"key": "Authorization", "value": "Bearer {{token}}"}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"rut\": \"17.111.222-3\",\n    \"nombre\": \"Pedro\",\n    \"apellido\": \"Gomez\",\n    \"email\": \"pedro@externo.cl\",\n    \"password\": \"123456\"\n}"
-						},
-						"url": {
-							"raw": "http://ventasfix.test/api/v1/usuarios",
-							"protocol": "http",
-							"host": ["ventasfix", "test"],
-							"path": ["api", "v1", "usuarios"]
+							"raw": "{{base_url}}/usuarios/2",
+							"host": ["{{base_url}}"],
+							"path": ["usuarios", "2"]
 						}
 					}
 				}
@@ -174,10 +247,9 @@
 							{"key": "Authorization", "value": "Bearer {{token}}"}
 						],
 						"url": {
-							"raw": "http://ventasfix.test/api/v1/productos",
-							"protocol": "http",
-							"host": ["ventasfix", "test"],
-							"path": ["api", "v1", "productos"]
+							"raw": "{{base_url}}/productos",
+							"host": ["{{base_url}}"],
+							"path": ["productos"]
 						}
 					}
 				},
@@ -190,15 +262,14 @@
 							{"key": "Authorization", "value": "Bearer {{token}}"}
 						],
 						"url": {
-							"raw": "http://ventasfix.test/api/v1/productos/1",
-							"protocol": "http",
-							"host": ["ventasfix", "test"],
-							"path": ["api", "v1", "productos", "1"]
+							"raw": "{{base_url}}/productos/1",
+							"host": ["{{base_url}}"],
+							"path": ["productos", "1"]
 						}
 					}
 				},
 				{
-					"name": "2.3 Agregar Nuevo Producto (201 Created + IVA 19%)",
+					"name": "2.3 Crear Producto (201 Created - Verifica Cálculo 19% IVA)",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -208,14 +279,14 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"sku\": \"PRD-PM-01\",\n    \"nombre\": \"Webcam 4K Ultra HD Pro\",\n    \"descripcion_corta\": \"Cámara web con micrófono dual y autofoco\",\n    \"descripcion_larga\": \"Sensor CMOS con lente gran angular de 90 grados y corrección automática de iluminación.\",\n    \"imagen\": \"/images/products/03.png\",\n    \"precio_neto\": 45000,\n    \"stock_actual\": 30,\n    \"stock_minimo\": 5,\n    \"stock_bajo\": 10,\n    \"stock_alto\": 60\n}"
+							"raw": "{\n    \"sku\": \"SOL-INV-200\",\n    \"nombre\": \"Soldadora Inverter Profesional 200A\",\n    \"descripcion_corta\": \"Soldadora con tecnología IGBT\",\n    \"descripcion_larga\": \"Equipo industrial monofásico de alto rendimiento para procesos MMA y TIG.\",\n    \"imagen\": \"/images/products/02.png\",\n    \"precio_neto\": 150000,\n    \"stock_actual\": 15,\n    \"stock_minimo\": 3,\n    \"stock_bajo\": 5,\n    \"stock_alto\": 30\n}"
 						},
 						"url": {
-							"raw": "http://ventasfix.test/api/v1/productos",
-							"protocol": "http",
-							"host": ["ventasfix", "test"],
-							"path": ["api", "v1", "productos"]
-						}
+							"raw": "{{base_url}}/productos",
+							"host": ["{{base_url}}"],
+							"path": ["productos"]
+						},
+						"description": "Demuestra la regla tributaria: con precio_neto = 150000, el backend calcula automáticamente precio_venta = 178500 (19% IVA)."
 					}
 				},
 				{
@@ -229,13 +300,12 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"sku\": \"PRD-001\",\n    \"nombre\": \"Laptop Profesional ProBook 15 Actualizada\",\n    \"descripcion_corta\": \"Laptop Core i7 32GB RAM\",\n    \"descripcion_larga\": \"Actualizado a 32GB de RAM para entornos de desarrollo exigentes.\",\n    \"imagen\": \"/images/products/01.png\",\n    \"precio_neto\": 700000,\n    \"stock_actual\": 22,\n    \"stock_minimo\": 5,\n    \"stock_bajo\": 10,\n    \"stock_alto\": 50\n}"
+							"raw": "{\n    \"sku\": \"SOL-INV-200\",\n    \"nombre\": \"Soldadora Inverter Profesional 200A Edición Plus\",\n    \"descripcion_corta\": \"Soldadora con tecnología IGBT y display digital\",\n    \"precio_neto\": 160000,\n    \"stock_actual\": 25,\n    \"stock_minimo\": 3,\n    \"stock_bajo\": 5,\n    \"stock_alto\": 30\n}"
 						},
 						"url": {
-							"raw": "http://ventasfix.test/api/v1/productos/1",
-							"protocol": "http",
-							"host": ["ventasfix", "test"],
-							"path": ["api", "v1", "productos", "1"]
+							"raw": "{{base_url}}/productos/1",
+							"host": ["{{base_url}}"],
+							"path": ["productos", "1"]
 						}
 					}
 				},
@@ -248,11 +318,26 @@
 							{"key": "Authorization", "value": "Bearer {{token}}"}
 						],
 						"url": {
-							"raw": "http://ventasfix.test/api/v1/productos/4",
-							"protocol": "http",
-							"host": ["ventasfix", "test"],
-							"path": ["api", "v1", "productos", "4"]
+							"raw": "{{base_url}}/productos/3",
+							"host": ["{{base_url}}"],
+							"path": ["productos", "3"]
 						}
+					}
+				},
+				{
+					"name": "2.6 Consultar Producto Inexistente (Demuestra 404 Not Found)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/productos/9999",
+							"host": ["{{base_url}}"],
+							"path": ["productos", "9999"]
+						},
+						"description": "Demuestra la respuesta estándar ante registros inexistentes."
 					}
 				}
 			]
@@ -269,10 +354,9 @@
 							{"key": "Authorization", "value": "Bearer {{token}}"}
 						],
 						"url": {
-							"raw": "http://ventasfix.test/api/v1/clientes",
-							"protocol": "http",
-							"host": ["ventasfix", "test"],
-							"path": ["api", "v1", "clientes"]
+							"raw": "{{base_url}}/clientes",
+							"host": ["{{base_url}}"],
+							"path": ["clientes"]
 						}
 					}
 				},
@@ -285,15 +369,14 @@
 							{"key": "Authorization", "value": "Bearer {{token}}"}
 						],
 						"url": {
-							"raw": "http://ventasfix.test/api/v1/clientes/1",
-							"protocol": "http",
-							"host": ["ventasfix", "test"],
-							"path": ["api", "v1", "clientes", "1"]
+							"raw": "{{base_url}}/clientes/1",
+							"host": ["{{base_url}}"],
+							"path": ["clientes", "1"]
 						}
 					}
 				},
 				{
-					"name": "3.3 Agregar Nuevo Cliente (201 Created)",
+					"name": "3.3 Crear Cliente Empresa B2B (201 Created)",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -303,14 +386,14 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"rut_empresa\": \"79.333.222-1\",\n    \"rubro\": \"Desarrollo de Software\",\n    \"razon_social\": \"Sistemas Digitales Avanzados SpA\",\n    \"telefono\": \"+56 9 7654 3210\",\n    \"direccion\": \"Moneda 970, Santiago\",\n    \"nombre_contacto\": \"Andrea Soto\",\n    \"email_contacto\": \"asoto@sistemasdigitales.cl\"\n}"
+							"raw": "{\n    \"rut_empresa\": \"77.654.321-0\",\n    \"razon_social\": \"Maquinarias y Soluciones Industriales SpA\",\n    \"rubro\": \"Ingeniería y Construcción\",\n    \"telefono\": \"+56 2 2345 6789\",\n    \"direccion\": \"Av. El Salto 4500, Huechuraba, Santiago\",\n    \"nombre_contacto\": \"Gonzalo Morales\",\n    \"email_contacto\": \"gmorales@maquinariaschile.cl\"\n}"
 						},
 						"url": {
-							"raw": "http://ventasfix.test/api/v1/clientes",
-							"protocol": "http",
-							"host": ["ventasfix", "test"],
-							"path": ["api", "v1", "clientes"]
-						}
+							"raw": "{{base_url}}/clientes",
+							"host": ["{{base_url}}"],
+							"path": ["clientes"]
+						},
+						"description": "Registra una nueva empresa corporativa B2B con validación de RUT único."
 					}
 				},
 				{
@@ -324,13 +407,12 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"rut_empresa\": \"76.123.456-7\",\n    \"rubro\": \"Telecomunicaciones y Redes\",\n    \"razon_social\": \"Inversiones Tecnológicas SpA\",\n    \"telefono\": \"+56 9 8765 4321\",\n    \"direccion\": \"Av. Providencia 1234, Of. 601, Santiago\",\n    \"nombre_contacto\": \"Mariana Valenzuela\",\n    \"email_contacto\": \"mvalenzuela@invertech.cl\"\n}"
+							"raw": "{\n    \"rut_empresa\": \"77.654.321-0\",\n    \"razon_social\": \"Maquinarias y Soluciones Industriales SpA (Actualizado)\",\n    \"rubro\": \"Ingeniería, Construcción y Minería\",\n    \"telefono\": \"+56 9 9988 7766\",\n    \"direccion\": \"Av. El Salto 4500, Of. 302, Santiago\",\n    \"nombre_contacto\": \"Gonzalo Morales R.\",\n    \"email_contacto\": \"gmorales@maquinariaschile.cl\"\n}"
 						},
 						"url": {
-							"raw": "http://ventasfix.test/api/v1/clientes/1",
-							"protocol": "http",
-							"host": ["ventasfix", "test"],
-							"path": ["api", "v1", "clientes", "1"]
+							"raw": "{{base_url}}/clientes/1",
+							"host": ["{{base_url}}"],
+							"path": ["clientes", "1"]
 						}
 					}
 				},
@@ -343,10 +425,9 @@
 							{"key": "Authorization", "value": "Bearer {{token}}"}
 						],
 						"url": {
-							"raw": "http://ventasfix.test/api/v1/clientes/3",
-							"protocol": "http",
-							"host": ["ventasfix", "test"],
-							"path": ["api", "v1", "clientes", "3"]
+							"raw": "{{base_url}}/clientes/2",
+							"host": ["{{base_url}}"],
+							"path": ["clientes", "2"]
 						}
 					}
 				}
