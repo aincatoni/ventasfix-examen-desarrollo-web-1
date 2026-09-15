@@ -25,7 +25,7 @@
 
 ## 🛠️ Tecnologías y Stack Utilizado
 
-- **Backend**: PHP 8.4 / Laravel 11.x
+- **Backend**: PHP 8.3 / Laravel 11.x
 - **Base de Datos**: MySQL 8.0 (ORM Eloquent, Migraciones y Seeders)
 - **Frontend**: Blade, SCSS, JavaScript (ES6+), Bootstrap 5.3 (Approx Theme)
 - **Compilador de Assets**: Vite 5
@@ -62,8 +62,7 @@ ventasfix/
 ├── database/
 │   ├── migrations/                  # Definición de esquemas de base de datos
 │   └── seeders/                     # Poblado de datos iniciales
-├── docs/                            # Guía técnica y colección Postman
-│   ├── GUIA_PASO_A_PASO_EXAMEN.md
+├── docs/                            # Colección Postman de integración
 │   └── VentasFix_API_Postman_Collection.json
 ├── resources/
 │   ├── views/                       # Vistas Blade (Auth, Dashboard, CRUDs)
