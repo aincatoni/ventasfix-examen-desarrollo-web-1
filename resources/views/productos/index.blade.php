@@ -88,10 +88,14 @@
                                     <td>${{ number_format($prod->precio_neto, 0, ',', '.') }}</td>
                                     <td class="fw-bold text-success">${{ number_format($prod->precio_venta, 0, ',', '.') }}</td>
                                     <td>
-                                        @if($prod->stock_actual <= $prod->stock_bajo)
-                                            <span class="badge bg-danger">{{ $prod->stock_actual }}</span>
+                                        @if($prod->stock_actual <= $prod->stock_minimo)
+                                            <span class="badge bg-danger" title="Crítico: stock en o bajo el mínimo">{{ $prod->stock_actual }}</span>
+                                        @elseif($prod->stock_actual <= $prod->stock_bajo)
+                                            <span class="badge bg-warning text-dark" title="Alerta: stock bajo">{{ $prod->stock_actual }}</span>
+                                        @elseif($prod->stock_actual > $prod->stock_alto)
+                                            <span class="badge bg-info text-white" title="Exceso: stock sobre el nivel alto">{{ $prod->stock_actual }}</span>
                                         @else
-                                            <span class="badge bg-success">{{ $prod->stock_actual }}</span>
+                                            <span class="badge bg-success" title="Óptimo: stock normal">{{ $prod->stock_actual }}</span>
                                         @endif
                                         <small class="text-muted">/ {{ $prod->stock_minimo }} / {{ $prod->stock_bajo }} / {{ $prod->stock_alto }}</small>
                                     </td>

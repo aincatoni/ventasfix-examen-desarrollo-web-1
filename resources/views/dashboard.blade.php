@@ -164,8 +164,12 @@
                                     <td>${{ number_format($producto->precio_neto, 0, ',', '.') }}</td>
                                     <td class="fw-bold text-success">${{ number_format($producto->precio_venta, 0, ',', '.') }}</td>
                                     <td>
-                                        @if($producto->stock_actual <= $producto->stock_bajo)
-                                            <span class="badge bg-danger">{{ $producto->stock_actual }} (Bajo)</span>
+                                        @if($producto->stock_actual <= $producto->stock_minimo)
+                                            <span class="badge bg-danger">{{ $producto->stock_actual }} (Crítico)</span>
+                                        @elseif($producto->stock_actual <= $producto->stock_bajo)
+                                            <span class="badge bg-warning text-dark">{{ $producto->stock_actual }} (Bajo)</span>
+                                        @elseif($producto->stock_actual > $producto->stock_alto)
+                                            <span class="badge bg-info text-white">{{ $producto->stock_actual }} (Exceso)</span>
                                         @else
                                             <span class="badge bg-success">{{ $producto->stock_actual }}</span>
                                         @endif
