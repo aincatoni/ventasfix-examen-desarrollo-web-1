@@ -127,7 +127,7 @@
 <div class="modal fade" id="modalCrearUsuario" tabindex="-1" aria-labelledby="modalCrearUsuarioLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="{{ route('usuarios.store') }}" method="POST">
+            <form id="formCrearUsuario" action="{{ route('usuarios.store') }}" method="POST">
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalCrearUsuarioLabel"><i class="las la-user-plus me-1 text-primary"></i> Agregar Usuario</h5>
@@ -151,6 +151,12 @@
                     <div class="mb-3">
                         <label for="email" class="form-label">Email Corporativo (Username) <span class="text-danger">*</span></label>
                         <input type="email" class="form-control" id="email" name="email" placeholder="usuario@ventasfix.cl" required value="{{ old('email') }}">
+                        <div class="invalid-feedback">
+                            El correo debe pertenecer estrictamente al dominio corporativo <strong>@ventasfix.cl</strong>.
+                        </div>
+                        <div class="valid-feedback">
+                            <i class="las la-check"></i> Dominio corporativo @ventasfix.cl válido.
+                        </div>
                         <small class="text-muted">Debe terminar estrictamente en <code>@ventasfix.cl</code></small>
                     </div>
                     <div class="mb-3">
@@ -197,6 +203,12 @@
                     <div class="mb-3">
                         <label for="edit_email" class="form-label">Email Corporativo (Username) <span class="text-danger">*</span></label>
                         <input type="email" class="form-control" id="edit_email" name="email" required>
+                        <div class="invalid-feedback">
+                            El correo debe pertenecer estrictamente al dominio corporativo <strong>@ventasfix.cl</strong>.
+                        </div>
+                        <div class="valid-feedback">
+                            <i class="las la-check"></i> Dominio corporativo @ventasfix.cl válido.
+                        </div>
                         <small class="text-muted">Debe terminar estrictamente en <code>@ventasfix.cl</code></small>
                     </div>
                     <div class="mb-3">
@@ -208,6 +220,10 @@
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-info"><i class="las la-save me-1"></i> Actualizar Usuario</button>
                 </div>
+            </form>
+        </div>
+    </div>
+</div>
 {{-- Modal Eliminar Usuario --}}
 <div class="modal fade" id="modalEliminarUsuario" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -237,6 +253,61 @@
 
 @section('script')
 <script>
+    // Validación en tiempo real del dominio corporativo @ventasfix.cl
+    function setupDomainValidation(inputId, formId) {
+        const input = document.getElementById(inputId);
+        const form = document.getElementById(formId);
+        if (!input) return;
+
+        const domainRegex = /^[a-zA-Z0-9._%+-]+@ventasfix\.cl$/i;
+
+        function validate() {
+            const val = input.value.trim();
+            if (val === '') {
+                input.classList.remove('is-valid', 'is-invalid');
+                return false;
+            }
+
+            if (domainRegex.test(val)) {
+                input.classList.remove('is-invalid');
+                input.classList.add('is-valid');
+                return true;
+            } else {
+                input.classList.remove('is-valid');
+                input.classList.add('is-invalid');
+                return false;
+            }
+        }
+
+        input.addEventListener('input', validate);
+        input.addEventListener('blur', validate);
+
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                if (!validate()) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    input.focus();
+                }
+            });
+        }
+    }
+
+    setupDomainValidation('email', 'formCrearUsuario');
+    setupDomainValidation('edit_email', 'formEditarUsuario');
+
+    // Limpiar validaciones al abrir modal crear
+    const modalCrear = document.getElementById('modalCrearUsuario');
+    if (modalCrear) {
+        modalCrear.addEventListener('show.bs.modal', function() {
+            const input = document.getElementById('email');
+            if (input && !input.value) {
+                input.classList.remove('is-valid', 'is-invalid');
+            }
+        });
+    }
+
+    // Poblar modal editar
     document.querySelectorAll('.btn-editar').forEach(btn => {
         btn.addEventListener('click', function() {
             const id = this.dataset.id;
@@ -250,11 +321,17 @@
             document.getElementById('edit_rut').value = rut;
             document.getElementById('edit_nombre').value = nombre;
             document.getElementById('edit_apellido').value = apellido;
-            document.getElementById('edit_email').value = email;
+
+            const editEmail = document.getElementById('edit_email');
+            editEmail.value = email;
+            editEmail.classList.remove('is-invalid');
+            editEmail.classList.add('is-valid');
+
             document.getElementById('edit_password').value = '';
         });
     });
 
+    // Poblar modal eliminar
     document.querySelectorAll('.btn-eliminar-usuario').forEach(btn => {
         btn.addEventListener('click', function() {
             const id = this.dataset.id;
