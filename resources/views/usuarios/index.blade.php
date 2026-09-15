@@ -161,8 +161,19 @@
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Contraseña <span class="text-danger">*</span></label>
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Mínimo 6 caracteres" required>
-                        <small class="text-muted">La contraseña será cifrada con Bcrypt en la base de datos.</small>
+                        <div class="input-group has-validation">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Mínimo 6 caracteres" minlength="6" required>
+                            <button class="btn btn-outline-secondary" type="button" id="togglePasswordBtn" title="Mostrar/Ocultar contraseña">
+                                <i class="las la-eye" id="togglePasswordIcon"></i>
+                            </button>
+                            <div id="password_error" class="invalid-feedback">
+                                La contraseña debe tener al menos 6 caracteres.
+                            </div>
+                            <div id="password_success" class="valid-feedback">
+                                <i class="las la-check"></i> Contraseña válida.
+                            </div>
+                        </div>
+                        <small class="text-muted d-block mt-1">La contraseña será cifrada con Bcrypt en la base de datos (mínimo 6 caracteres).</small>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -213,7 +224,19 @@
                     </div>
                     <div class="mb-3">
                         <label for="edit_password" class="form-label">Nueva Contraseña (Opcional)</label>
-                        <input type="password" class="form-control" id="edit_password" name="password" placeholder="Dejar en blanco para mantener la actual">
+                        <div class="input-group has-validation">
+                            <input type="password" class="form-control" id="edit_password" name="password" placeholder="Dejar en blanco para mantener la actual" minlength="6">
+                            <button class="btn btn-outline-secondary" type="button" id="toggleEditPasswordBtn" title="Mostrar/Ocultar contraseña">
+                                <i class="las la-eye" id="toggleEditPasswordIcon"></i>
+                            </button>
+                            <div id="edit_password_error" class="invalid-feedback">
+                                La nueva contraseña debe tener al menos 6 caracteres.
+                            </div>
+                            <div id="edit_password_success" class="valid-feedback">
+                                <i class="las la-check"></i> Contraseña válida.
+                            </div>
+                        </div>
+                        <small class="text-muted d-block mt-1">Dejar en blanco para mantener la contraseña actual.</small>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -253,11 +276,32 @@
 
 @section('script')
 <script>
-    // Validación en tiempo real del dominio corporativo @ventasfix.cl
-    function setupDomainValidation(inputId, formId) {
+    // 1. Mostrar/Ocultar contraseña
+    function setupPasswordToggle(btnId, inputId, iconId) {
+        const btn = document.getElementById(btnId);
         const input = document.getElementById(inputId);
-        const form = document.getElementById(formId);
-        if (!input) return;
+        const icon = document.getElementById(iconId);
+        if (!btn || !input || !icon) return;
+
+        btn.addEventListener('click', function() {
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('la-eye');
+                icon.classList.add('la-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('la-eye-slash');
+                icon.classList.add('la-eye');
+            }
+        });
+    }
+    setupPasswordToggle('togglePasswordBtn', 'password', 'togglePasswordIcon');
+    setupPasswordToggle('toggleEditPasswordBtn', 'edit_password', 'toggleEditPasswordIcon');
+
+    // 2. Validación en tiempo real del dominio corporativo @ventasfix.cl
+    function setupDomainValidation(inputId) {
+        const input = document.getElementById(inputId);
+        if (!input) return () => true;
 
         const domainRegex = /^[a-zA-Z0-9._%+-]+@ventasfix\.cl$/i;
 
@@ -282,21 +326,108 @@
         input.addEventListener('input', validate);
         input.addEventListener('blur', validate);
 
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                if (!validate()) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    input.focus();
-                }
-            });
+        return validate;
+    }
+
+    const validateEmail = setupDomainValidation('email');
+    const validateEditEmail = setupDomainValidation('edit_email');
+
+    // 3. Validación en tiempo real de Contraseña (mínimo 6 caracteres)
+    const passInput = document.getElementById('password');
+    const passError = document.getElementById('password_error');
+    const passSuccess = document.getElementById('password_success');
+
+    function validatePassword() {
+        if (!passInput) return true;
+        const val = passInput.value;
+        if (val.length === 0) {
+            passInput.classList.remove('is-valid');
+            passInput.classList.add('is-invalid');
+            if (passError) passError.textContent = 'La contraseña es obligatoria.';
+            return false;
+        } else if (val.length < 6) {
+            passInput.classList.remove('is-valid');
+            passInput.classList.add('is-invalid');
+            if (passError) passError.textContent = `La contraseña debe tener al menos 6 caracteres (llevas ${val.length}/6).`;
+            return false;
+        } else {
+            passInput.classList.remove('is-invalid');
+            passInput.classList.add('is-valid');
+            if (passSuccess) passSuccess.innerHTML = `<i class="las la-check"></i> Contraseña válida (${val.length} caracteres).`;
+            return true;
         }
     }
 
-    setupDomainValidation('email', 'formCrearUsuario');
-    setupDomainValidation('edit_email', 'formEditarUsuario');
+    if (passInput) {
+        passInput.addEventListener('input', validatePassword);
+        passInput.addEventListener('blur', validatePassword);
+    }
 
-    // Limpiar validaciones al abrir modal crear
+    // 4. Validación en tiempo real de Contraseña en Edición (opcional)
+    const editPassInput = document.getElementById('edit_password');
+    const editPassError = document.getElementById('edit_password_error');
+    const editPassSuccess = document.getElementById('edit_password_success');
+
+    function validateEditPassword() {
+        if (!editPassInput) return true;
+        const val = editPassInput.value;
+        if (val.length === 0) {
+            editPassInput.classList.remove('is-valid', 'is-invalid');
+            return true; // Opcional si se deja en blanco
+        } else if (val.length < 6) {
+            editPassInput.classList.remove('is-valid');
+            editPassInput.classList.add('is-invalid');
+            if (editPassError) editPassError.textContent = `La nueva contraseña debe tener al menos 6 caracteres (llevas ${val.length}/6).`;
+            return false;
+        } else {
+            editPassInput.classList.remove('is-invalid');
+            editPassInput.classList.add('is-valid');
+            if (editPassSuccess) editPassSuccess.innerHTML = `<i class="las la-check"></i> Contraseña válida (${val.length} caracteres).`;
+            return true;
+        }
+    }
+
+    if (editPassInput) {
+        editPassInput.addEventListener('input', validateEditPassword);
+        editPassInput.addEventListener('blur', validateEditPassword);
+    }
+
+    // 5. Interceptar envíos de formularios si hay errores
+    const formCrear = document.getElementById('formCrearUsuario');
+    if (formCrear) {
+        formCrear.addEventListener('submit', function(e) {
+            const isEmailOk = validateEmail();
+            const isPassOk = validatePassword();
+            if (!isEmailOk || !isPassOk) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!isEmailOk) {
+                    document.getElementById('email')?.focus();
+                } else {
+                    passInput?.focus();
+                }
+            }
+        });
+    }
+
+    const formEditar = document.getElementById('formEditarUsuario');
+    if (formEditar) {
+        formEditar.addEventListener('submit', function(e) {
+            const isEmailOk = validateEditEmail();
+            const isPassOk = validateEditPassword();
+            if (!isEmailOk || !isPassOk) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!isEmailOk) {
+                    document.getElementById('edit_email')?.focus();
+                } else {
+                    editPassInput?.focus();
+                }
+            }
+        });
+    }
+
+    // 6. Limpiar campos al abrir modal crear
     const modalCrear = document.getElementById('modalCrearUsuario');
     if (modalCrear) {
         modalCrear.addEventListener('show.bs.modal', function() {
@@ -304,10 +435,20 @@
             if (input && !input.value) {
                 input.classList.remove('is-valid', 'is-invalid');
             }
+            if (passInput) {
+                passInput.value = '';
+                passInput.classList.remove('is-valid', 'is-invalid');
+                passInput.type = 'password';
+                const icon = document.getElementById('togglePasswordIcon');
+                if (icon) {
+                    icon.classList.remove('la-eye-slash');
+                    icon.classList.add('la-eye');
+                }
+            }
         });
     }
 
-    // Poblar modal editar
+    // 7. Poblar modal editar
     document.querySelectorAll('.btn-editar').forEach(btn => {
         btn.addEventListener('click', function() {
             const id = this.dataset.id;
@@ -327,11 +468,20 @@
             editEmail.classList.remove('is-invalid');
             editEmail.classList.add('is-valid');
 
-            document.getElementById('edit_password').value = '';
+            if (editPassInput) {
+                editPassInput.value = '';
+                editPassInput.classList.remove('is-valid', 'is-invalid');
+                editPassInput.type = 'password';
+                const icon = document.getElementById('toggleEditPasswordIcon');
+                if (icon) {
+                    icon.classList.remove('la-eye-slash');
+                    icon.classList.add('la-eye');
+                }
+            }
         });
     });
 
-    // Poblar modal eliminar
+    // 8. Poblar modal eliminar
     document.querySelectorAll('.btn-eliminar-usuario').forEach(btn => {
         btn.addEventListener('click', function() {
             const id = this.dataset.id;
