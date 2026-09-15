@@ -28,8 +28,8 @@ class Producto extends Model
     protected function casts(): array
     {
         return [
-            'precio_neto' => 'decimal:2',
-            'precio_venta' => 'decimal:2',
+            'precio_neto' => 'integer',
+            'precio_venta' => 'integer',
             'stock_actual' => 'integer',
             'stock_minimo' => 'integer',
             'stock_bajo' => 'integer',
@@ -40,8 +40,8 @@ class Producto extends Model
     /**
      * Calcula automáticamente el precio con IVA (19%).
      */
-    public static function calcularPrecioVenta(float|int $precioNeto): float
+    public static function calcularPrecioVenta(float|int $precioNeto): int
     {
-        return round($precioNeto * 1.19, 2);
+        return (int) round($precioNeto * 1.19);
     }
 }

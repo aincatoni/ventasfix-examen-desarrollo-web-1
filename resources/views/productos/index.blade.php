@@ -107,8 +107,8 @@
                                             data-desc_corta="{{ $prod->descripcion_corta }}"
                                             data-desc_larga="{{ $prod->descripcion_larga }}"
                                             data-imagen="{{ $prod->imagen }}"
-                                            data-precio_neto="{{ $prod->precio_neto }}"
-                                            data-precio_venta="{{ $prod->precio_venta }}"
+                                            data-precio_neto="{{ (int) $prod->precio_neto }}"
+                                            data-precio_venta="{{ (int) $prod->precio_venta }}"
                                             data-stock_actual="{{ $prod->stock_actual }}"
                                             data-stock_minimo="{{ $prod->stock_minimo }}"
                                             data-stock_bajo="{{ $prod->stock_bajo }}"
@@ -179,12 +179,12 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="precio_neto" class="form-label">Precio Neto ($) <span class="text-danger">*</span></label>
-                            <input type="number" step="0.01" class="form-control" id="precio_neto" name="precio_neto" placeholder="0" required value="{{ old('precio_neto') }}">
+                            <label for="precio_neto" class="form-label">Precio Neto ($ CLP) <span class="text-danger">*</span></label>
+                            <input type="number" step="1" class="form-control" id="precio_neto" name="precio_neto" placeholder="Ej: 100000" required value="{{ old('precio_neto') }}">
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="precio_venta" class="form-label">Precio Venta con IVA 19% ($)</label>
-                            <input type="number" step="0.01" class="form-control bg-light" id="precio_venta" name="precio_venta" placeholder="Calculado automáticamente (Neto * 1.19)" readonly>
+                            <label for="precio_venta" class="form-label">Precio Venta con IVA 19% ($ CLP)</label>
+                            <input type="number" step="1" class="form-control bg-light" id="precio_venta" name="precio_venta" placeholder="Calculado automáticamente (Neto * 1.19)" readonly>
                             <small class="text-success"><i class="las la-calculator"></i> Se calcula automáticamente con IVA 19%.</small>
                         </div>
                     </div>
@@ -252,12 +252,12 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="edit_precio_neto" class="form-label">Precio Neto ($) <span class="text-danger">*</span></label>
-                            <input type="number" step="0.01" class="form-control" id="edit_precio_neto" name="precio_neto" required>
+                            <label for="edit_precio_neto" class="form-label">Precio Neto ($ CLP) <span class="text-danger">*</span></label>
+                            <input type="number" step="1" class="form-control" id="edit_precio_neto" name="precio_neto" required>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="edit_precio_venta" class="form-label">Precio Venta con IVA 19% ($)</label>
-                            <input type="number" step="0.01" class="form-control bg-light" id="edit_precio_venta" name="precio_venta" readonly>
+                            <label for="edit_precio_venta" class="form-label">Precio Venta con IVA 19% ($ CLP)</label>
+                            <input type="number" step="1" class="form-control bg-light" id="edit_precio_venta" name="precio_venta" readonly>
                         </div>
                     </div>
                     <div class="row">
@@ -357,8 +357,8 @@
             document.getElementById('edit_descripcion_corta').value = this.dataset.desc_corta;
             document.getElementById('edit_descripcion_larga').value = this.dataset.desc_larga;
             document.getElementById('edit_imagen').value = this.dataset.imagen;
-            document.getElementById('edit_precio_neto').value = this.dataset.precio_neto;
-            document.getElementById('edit_precio_venta').value = this.dataset.precio_venta;
+            document.getElementById('edit_precio_neto').value = Math.round(parseFloat(this.dataset.precio_neto) || 0);
+            document.getElementById('edit_precio_venta').value = Math.round(parseFloat(this.dataset.precio_venta) || 0);
             document.getElementById('edit_stock_actual').value = this.dataset.stock_actual;
             document.getElementById('edit_stock_minimo').value = this.dataset.stock_minimo;
             document.getElementById('edit_stock_bajo').value = this.dataset.stock_bajo;
