@@ -97,13 +97,14 @@
                                             data-bs-target="#modalEditarCliente">
                                             <i class="las la-pen"></i> Editar
                                         </button>
-                                        <form action="{{ route('clientes.destroy', $cli->id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Está seguro de que desea eliminar este cliente empresa?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                <i class="las la-trash"></i> Eliminar
-                                            </button>
-                                        </form>
+                                        <button type="button" 
+                                            class="btn btn-sm btn-outline-danger btn-eliminar-cli"
+                                            data-id="{{ $cli->id }}"
+                                            data-nombre="{{ $cli->razon_social }}"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalEliminarCliente">
+                                            <i class="las la-trash"></i> Eliminar
+                                        </button>
                                     </td>
                                 </tr>
                             @empty
@@ -234,6 +235,33 @@
     </div>
 </div>
 
+{{-- Modal Eliminar Cliente --}}
+<div class="modal fade" id="modalEliminarCliente" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="formEliminarCliente" action="" method="POST">
+                @csrf
+                @method('DELETE')
+                <div class="modal-header border-0 pb-0">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center pt-0 pb-3">
+                    <div class="mb-3">
+                        <i class="las la-exclamation-triangle text-danger" style="font-size: 56px;"></i>
+                    </div>
+                    <h5 class="modal-title mb-2 fw-semibold">¿Confirmar Eliminación?</h5>
+                    <p class="text-muted mb-0">¿Está seguro de que desea eliminar la empresa cliente <strong id="delete_cli_nombre" class="text-dark"></strong>?</p>
+                    <small class="text-danger d-block mt-2">Esta acción no se puede deshacer.</small>
+                </div>
+                <div class="modal-footer justify-content-center border-0 pt-0 pb-4">
+                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger px-4"><i class="las la-trash me-1"></i> Sí, Eliminar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @section('script')
 <script>
     document.querySelectorAll('.btn-editar-cli').forEach(btn => {
@@ -249,6 +277,16 @@
             document.getElementById('edit_direccion').value = this.dataset.direccion;
             document.getElementById('edit_nombre_contacto').value = this.dataset.contacto_nombre;
             document.getElementById('edit_email_contacto').value = this.dataset.contacto_email;
+        });
+    });
+
+    document.querySelectorAll('.btn-eliminar-cli').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.dataset.id;
+            const nombre = this.dataset.nombre;
+            const form = document.getElementById('formEliminarCliente');
+            form.action = `/clientes/${id}`;
+            document.getElementById('delete_cli_nombre').textContent = nombre;
         });
     });
 </script>

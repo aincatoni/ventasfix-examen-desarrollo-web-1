@@ -117,13 +117,14 @@
                                             data-bs-target="#modalEditarProducto">
                                             <i class="las la-pen"></i> Editar
                                         </button>
-                                        <form action="{{ route('productos.destroy', $prod->id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Está seguro de que desea eliminar este producto?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                <i class="las la-trash"></i> Eliminar
-                                            </button>
-                                        </form>
+                                        <button type="button" 
+                                            class="btn btn-sm btn-outline-danger btn-eliminar-prod"
+                                            data-id="{{ $prod->id }}"
+                                            data-nombre="{{ $prod->nombre }}"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalEliminarProducto">
+                                            <i class="las la-trash"></i> Eliminar
+                                        </button>
                                     </td>
                                 </tr>
                             @empty
@@ -287,6 +288,33 @@
     </div>
 </div>
 
+{{-- Modal Eliminar Producto --}}
+<div class="modal fade" id="modalEliminarProducto" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="formEliminarProducto" action="" method="POST">
+                @csrf
+                @method('DELETE')
+                <div class="modal-header border-0 pb-0">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center pt-0 pb-3">
+                    <div class="mb-3">
+                        <i class="las la-exclamation-triangle text-danger" style="font-size: 56px;"></i>
+                    </div>
+                    <h5 class="modal-title mb-2 fw-semibold">¿Confirmar Eliminación?</h5>
+                    <p class="text-muted mb-0">¿Está seguro de que desea eliminar el producto <strong id="delete_prod_nombre" class="text-dark"></strong>?</p>
+                    <small class="text-danger d-block mt-2">Esta acción no se puede deshacer.</small>
+                </div>
+                <div class="modal-footer justify-content-center border-0 pt-0 pb-4">
+                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger px-4"><i class="las la-trash me-1"></i> Sí, Eliminar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @section('script')
 <script>
     // Cálculo reactivo del IVA 19% en creación
@@ -335,6 +363,17 @@
             document.getElementById('edit_stock_minimo').value = this.dataset.stock_minimo;
             document.getElementById('edit_stock_bajo').value = this.dataset.stock_bajo;
             document.getElementById('edit_stock_alto').value = this.dataset.stock_alto;
+        });
+    });
+
+    // Poblar modal de eliminación
+    document.querySelectorAll('.btn-eliminar-prod').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.dataset.id;
+            const nombre = this.dataset.nombre;
+            const form = document.getElementById('formEliminarProducto');
+            form.action = `/productos/${id}`;
+            document.getElementById('delete_prod_nombre').textContent = nombre;
         });
     });
 </script>
