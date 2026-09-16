@@ -5,12 +5,14 @@ namespace Tests\Feature;
 use App\Models\Cliente;
 use App\Models\Producto;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class VentasFixApiTest extends TestCase
 {
+    use DatabaseTransactions;
+
     protected User $adminUser;
 
     protected function setUp(): void

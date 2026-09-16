@@ -18,17 +18,17 @@ class UpdateProductoRequest extends FormRequest
         $prodId = is_object($producto) ? $producto->id : $producto;
 
         return [
-            'sku' => ['required', 'string', 'max:50', Rule::unique('productos', 'sku')->ignore($prodId)],
-            'nombre' => ['required', 'string', 'max:150'],
-            'descripcion_corta' => ['required', 'string', 'max:255'],
-            'descripcion_larga' => ['required', 'string'],
-            'imagen' => ['required', 'string'],
-            'precio_neto' => ['required', 'numeric', 'min:0'],
+            'sku' => ['sometimes', 'required', 'string', 'max:50', Rule::unique('productos', 'sku')->ignore($prodId)],
+            'nombre' => ['sometimes', 'required', 'string', 'max:150'],
+            'descripcion_corta' => ['sometimes', 'required', 'string', 'max:255'],
+            'descripcion_larga' => ['sometimes', 'required', 'string'],
+            'imagen' => ['sometimes', 'required', 'string'],
+            'precio_neto' => ['sometimes', 'required', 'numeric', 'min:0'],
             'precio_venta' => ['nullable', 'numeric', 'min:0'],
-            'stock_actual' => ['required', 'integer', 'min:0'],
-            'stock_minimo' => ['required', 'integer', 'min:0'],
-            'stock_bajo' => ['required', 'integer', 'min:0'],
-            'stock_alto' => ['required', 'integer', 'min:0'],
+            'stock_actual' => ['sometimes', 'required', 'integer', 'min:0'],
+            'stock_minimo' => ['sometimes', 'required', 'integer', 'min:0'],
+            'stock_bajo' => ['sometimes', 'required', 'integer', 'min:0'],
+            'stock_alto' => ['sometimes', 'required', 'integer', 'min:0'],
         ];
     }
 

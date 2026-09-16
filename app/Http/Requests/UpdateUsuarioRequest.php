@@ -18,10 +18,11 @@ class UpdateUsuarioRequest extends FormRequest
         $userId = is_object($usuario) ? $usuario->id : $usuario;
 
         return [
-            'rut' => ['required', 'string', 'max:20', Rule::unique('users', 'rut')->ignore($userId)],
-            'nombre' => ['required', 'string', 'max:100'],
-            'apellido' => ['required', 'string', 'max:100'],
+            'rut' => ['sometimes', 'required', 'string', 'max:20', Rule::unique('users', 'rut')->ignore($userId)],
+            'nombre' => ['sometimes', 'required', 'string', 'max:100'],
+            'apellido' => ['sometimes', 'required', 'string', 'max:100'],
             'email' => [
+                'sometimes',
                 'required',
                 'string',
                 'email',

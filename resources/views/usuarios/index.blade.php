@@ -74,7 +74,7 @@
                             @forelse($usuarios as $user)
                                 <tr>
                                     <td><span class="badge bg-secondary-subtle text-secondary">{{ $user->id }}</span></td>
-                                    <td><strong>{{ $user->rut }}</strong></td>
+                                    <td class="text-nowrap"><strong>{{ $user->rut }}</strong></td>
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <div class="avatar-sm bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
@@ -84,8 +84,8 @@
                                         </div>
                                     </td>
                                     <td><code>{{ $user->email }}</code></td>
-                                    <td>{{ $user->created_at ? $user->created_at->format('d/m/Y H:i') : '-' }}</td>
-                                    <td class="text-end">
+                                    <td class="text-nowrap">{{ $user->created_at ? $user->created_at->format('d/m/Y H:i') : '-' }}</td>
+                                    <td class="text-end text-nowrap">
                                         <button class="btn btn-sm btn-outline-info me-1 btn-editar"
                                             data-id="{{ $user->id }}"
                                             data-rut="{{ $user->rut }}"
@@ -115,7 +115,7 @@
                     </table>
                 </div>
 
-                <div class="mt-3 d-flex justify-content-end">
+                <div class="mt-4 pt-3 border-top">
                     {{ $usuarios->links() }}
                 </div>
             </div>

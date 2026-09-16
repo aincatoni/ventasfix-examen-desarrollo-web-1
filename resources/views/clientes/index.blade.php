@@ -74,16 +74,16 @@
                         <tbody>
                             @forelse($clientes as $cli)
                                 <tr>
-                                    <td><span class="badge bg-warning-subtle text-warning border border-warning-subtle">{{ $cli->rut_empresa }}</span></td>
+                                    <td class="text-nowrap"><span class="badge bg-warning-subtle text-warning border border-warning-subtle">{{ $cli->rut_empresa }}</span></td>
                                     <td><strong>{{ $cli->razon_social }}</strong></td>
                                     <td><span class="badge bg-light text-dark border">{{ $cli->rubro }}</span></td>
-                                    <td><small>{{ $cli->telefono }}</small></td>
+                                    <td class="text-nowrap"><small>{{ $cli->telefono }}</small></td>
                                     <td><small class="text-muted">{{ $cli->direccion }}</small></td>
                                     <td>
                                         <div><strong>{{ $cli->nombre_contacto }}</strong></div>
                                         <small class="text-muted"><a href="mailto:{{ $cli->email_contacto }}">{{ $cli->email_contacto }}</a></small>
                                     </td>
-                                    <td class="text-end">
+                                    <td class="text-end text-nowrap">
                                         <button class="btn btn-sm btn-outline-info me-1 btn-editar-cli"
                                             data-id="{{ $cli->id }}"
                                             data-rut="{{ $cli->rut_empresa }}"
@@ -116,7 +116,7 @@
                     </table>
                 </div>
 
-                <div class="mt-3 d-flex justify-content-end">
+                <div class="mt-4 pt-3 border-top">
                     {{ $clientes->links() }}
                 </div>
             </div>

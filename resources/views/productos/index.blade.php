@@ -74,7 +74,7 @@
                         <tbody>
                             @forelse($productos as $prod)
                                 <tr>
-                                    <td><span class="badge bg-dark-subtle text-dark">{{ $prod->sku }}</span></td>
+                                    <td class="text-nowrap"><span class="badge bg-dark-subtle text-dark">{{ $prod->sku }}</span></td>
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <img src="{{ $prod->imagen }}" alt="{{ $prod->nombre }}" class="me-2 thumb-md rounded border" onerror="this.src='/images/products/01.png';">
@@ -85,9 +85,9 @@
                                         </div>
                                     </td>
                                     <td><small class="text-muted">{{ Str::limit($prod->descripcion_corta, 40) }}</small></td>
-                                    <td>${{ number_format($prod->precio_neto, 0, ',', '.') }}</td>
-                                    <td class="fw-bold text-success">${{ number_format($prod->precio_venta, 0, ',', '.') }}</td>
-                                    <td>
+                                    <td class="text-nowrap">${{ number_format($prod->precio_neto, 0, ',', '.') }}</td>
+                                    <td class="text-nowrap fw-bold text-success">${{ number_format($prod->precio_venta, 0, ',', '.') }}</td>
+                                    <td class="text-nowrap">
                                         @if($prod->stock_actual <= $prod->stock_minimo)
                                             <span class="badge bg-danger" title="Crítico: stock en o bajo el mínimo">{{ $prod->stock_actual }}</span>
                                         @elseif($prod->stock_actual <= $prod->stock_bajo)
@@ -99,7 +99,7 @@
                                         @endif
                                         <small class="text-muted">/ {{ $prod->stock_minimo }} / {{ $prod->stock_bajo }} / {{ $prod->stock_alto }}</small>
                                     </td>
-                                    <td class="text-end">
+                                    <td class="text-end text-nowrap">
                                         <button class="btn btn-sm btn-outline-info me-1 btn-editar-prod"
                                             data-id="{{ $prod->id }}"
                                             data-sku="{{ $prod->sku }}"
@@ -136,7 +136,7 @@
                     </table>
                 </div>
 
-                <div class="mt-3 d-flex justify-content-end">
+                <div class="mt-4 pt-3 border-top">
                     {{ $productos->links() }}
                 </div>
             </div>

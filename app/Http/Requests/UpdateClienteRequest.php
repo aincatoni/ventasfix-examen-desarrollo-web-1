@@ -18,13 +18,13 @@ class UpdateClienteRequest extends FormRequest
         $clienteId = is_object($cliente) ? $cliente->id : $cliente;
 
         return [
-            'rut_empresa' => ['required', 'string', 'max:20', Rule::unique('clientes', 'rut_empresa')->ignore($clienteId)],
-            'rubro' => ['required', 'string', 'max:100'],
-            'razon_social' => ['required', 'string', 'max:150'],
-            'telefono' => ['required', 'string', 'max:50'],
-            'direccion' => ['required', 'string', 'max:255'],
-            'nombre_contacto' => ['required', 'string', 'max:100'],
-            'email_contacto' => ['required', 'string', 'email', 'max:150'],
+            'rut_empresa' => ['sometimes', 'required', 'string', 'max:20', Rule::unique('clientes', 'rut_empresa')->ignore($clienteId)],
+            'rubro' => ['sometimes', 'required', 'string', 'max:100'],
+            'razon_social' => ['sometimes', 'required', 'string', 'max:150'],
+            'telefono' => ['sometimes', 'required', 'string', 'max:50'],
+            'direccion' => ['sometimes', 'required', 'string', 'max:255'],
+            'nombre_contacto' => ['sometimes', 'required', 'string', 'max:100'],
+            'email_contacto' => ['sometimes', 'required', 'string', 'email', 'max:150'],
         ];
     }
 
