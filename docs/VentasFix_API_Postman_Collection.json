@@ -209,13 +209,14 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"nombre\": \"Mauricio Actualizado\",\n    \"apellido\": \"Contreras Silva\",\n    \"email\": \"mcontreras@ventasfix.cl\",\n    \"rol\": \"supervisor\"\n}"
+							"raw": "{\n    \"rut\": \"11.111.111-1\",\n    \"nombre\": \"Administrador Principal\",\n    \"apellido\": \"VentasFix SPA\",\n    \"email\": \"admin@ventasfix.cl\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/usuarios/1",
 							"host": ["{{base_url}}"],
 							"path": ["usuarios", "1"]
-						}
+						},
+						"description": "Actualiza los datos del usuario con ID 1. Valida unicidad de RUT y correo corporativo @ventasfix.cl. Retorna 200 OK."
 					}
 				},
 				{
@@ -300,13 +301,14 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"sku\": \"SOL-INV-200\",\n    \"nombre\": \"Soldadora Inverter Profesional 200A Edición Plus\",\n    \"descripcion_corta\": \"Soldadora con tecnología IGBT y display digital\",\n    \"precio_neto\": 160000,\n    \"stock_actual\": 25,\n    \"stock_minimo\": 3,\n    \"stock_bajo\": 5,\n    \"stock_alto\": 30\n}"
+							"raw": "{\n    \"sku\": \"PRD-001\",\n    \"nombre\": \"Laptop Profesional ProBook 15\\\" (Actualizado)\",\n    \"descripcion_corta\": \"Laptop Intel Core i7 16GB RAM 1TB SSD\",\n    \"descripcion_larga\": \"Equipo de alto rendimiento para trabajadores y desarrolladores con pantalla FHD IPS y teclado retroiluminado (Edición Actualizada).\",\n    \"imagen\": \"/images/products/01.png\",\n    \"precio_neto\": 680000,\n    \"stock_actual\": 28,\n    \"stock_minimo\": 5,\n    \"stock_bajo\": 10,\n    \"stock_alto\": 50\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/productos/1",
 							"host": ["{{base_url}}"],
 							"path": ["productos", "1"]
-						}
+						},
+						"description": "Actualiza el producto con ID 1. Recalcula automáticamente el precio de venta con IVA 19% ($680.000 -> $809.200) y sincroniza con Softland ERP. Retorna 200 OK."
 					}
 				},
 				{
@@ -407,13 +409,14 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"rut_empresa\": \"77.654.321-0\",\n    \"razon_social\": \"Maquinarias y Soluciones Industriales SpA (Actualizado)\",\n    \"rubro\": \"Ingeniería, Construcción y Minería\",\n    \"telefono\": \"+56 9 9988 7766\",\n    \"direccion\": \"Av. El Salto 4500, Of. 302, Santiago\",\n    \"nombre_contacto\": \"Gonzalo Morales R.\",\n    \"email_contacto\": \"gmorales@maquinariaschile.cl\"\n}"
+							"raw": "{\n    \"rut_empresa\": \"76.123.456-7\",\n    \"razon_social\": \"Inversiones Tecnológicas SpA (Actualizado)\",\n    \"rubro\": \"Tecnología, Cloud y Telecomunicaciones\",\n    \"telefono\": \"+56 9 8765 4321\",\n    \"direccion\": \"Av. Providencia 1234, Piso 10, Santiago\",\n    \"nombre_contacto\": \"Mariana Valenzuela R.\",\n    \"email_contacto\": \"mvalenzuela@invertech.cl\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/clientes/1",
 							"host": ["{{base_url}}"],
 							"path": ["clientes", "1"]
-						}
+						},
+						"description": "Actualiza los datos de la empresa cliente con ID 1. Valida unicidad de RUT de empresa y datos de contacto. Retorna 200 OK."
 					}
 				},
 				{
