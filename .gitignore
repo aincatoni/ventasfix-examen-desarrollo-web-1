@@ -20,3 +20,4 @@ yarn-error.log
 /.vscode
 /docs/GUIA_PASO_A_PASO_EXAMEN.md
 /docs/GUION_TECNICO_EXPOSICION.md
+.DS_Store
